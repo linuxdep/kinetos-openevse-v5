@@ -1,0 +1,105 @@
+diff --git a/src/sdm_meter.cpp b/src/sdm_meter.cpp
+index b2be8c34..9038ef92 100644
+--- a/src/sdm_meter.cpp
++++ b/src/sdm_meter.cpp
+@@ -15,6 +15,21 @@
+ #define SDM_METER_ABSENT_AFTER 30000 // ms without any answer -> no meter fitted
+ #define SDM_METER_PROBE       60000 // ms between probes while absent
+ 
++#ifdef METER_DTS4921
++#define SDM_METER_FC          0x03
++
++// DTS4921 registers (FC 0x03, 32-bit integer big-endian)
++const uint16_t SdmMeter::_registers[SdmMeter::ValueCount] = {
++  0x0100, 0x0102, 0x0104, // voltage L1-L3 (uint32, 0.1 V)
++  0x0106, 0x0108, 0x010A, // current L1-L3 (uint32, 0.001 A)
++  0x0110, 0x0112, 0x0114, // active power L1-L3 (int32, 0.1 W)
++  0x010E,                 // total active power (int32, 0.1 W)
++  0x0027,                 // import active energy (uint32, 0.01 kWh)
++  0x001D                  // total active energy (uint32, 0.01 kWh)
++};
++#else
++#define SDM_METER_FC          0x04
++
+ // SDM630 input registers (FC 0x04, IEEE-754 float, big-endian)
+ const uint16_t SdmMeter::_registers[SdmMeter::ValueCount] = {
+   0x0000, 0x0002, 0x0004, // voltage L1-L3
+@@ -24,6 +39,7 @@ const uint16_t SdmMeter::_registers[SdmMeter::ValueCount] = {
+   0x0048,                 // import active energy kWh
+   0x0156                  // total active energy kWh
+ };
++#endif
+ 
+ SdmMeter::SdmMeter() :
+   MicroTasks::Task(),
+@@ -72,7 +88,7 @@ void SdmMeter::sendRequest()
+ {
+   uint16_t reg = _registers[_index];
+   uint8_t req[8] = {
+-    SDM_METER_ADDRESS, 0x04,
++    SDM_METER_ADDRESS, SDM_METER_FC,
+     (uint8_t)(reg >> 8), (uint8_t)(reg & 0xFF),
+     0x00, 0x02,
+     0, 0
+@@ -101,8 +117,8 @@ bool SdmMeter::handleResponse()
+     return false;
+   }
+ 
+-  uint16_t crc = crc16(_rx, 7);
+-  if(_rx[0] != SDM_METER_ADDRESS || _rx[1] != 0x04 || _rx[2] != 0x04 ||
++    uint16_t crc = crc16(_rx, 7);
++  if(_rx[0] != SDM_METER_ADDRESS || _rx[1] != SDM_METER_FC || _rx[2] != 0x04 ||
+      _rx[7] != (crc & 0xFF) || _rx[8] != (crc >> 8))
+   {
+     DBUGF("SdmMeter: bad response for reg 0x%04x", _registers[_index]);
+@@ -112,7 +128,35 @@ bool SdmMeter::handleResponse()
+ 
+   uint32_t raw = ((uint32_t)_rx[3] << 24) | ((uint32_t)_rx[4] << 16) | ((uint32_t)_rx[5] << 8) | _rx[6];
+   float value;
++#ifdef METER_DTS4921
++  switch(_index) {
++    case VoltageL1:
++    case VoltageL2:
++    case VoltageL3:
++      value = (float)raw * 0.1f;
++      break;
++    case CurrentL1:
++    case CurrentL2:
++    case CurrentL3:
++      value = (float)raw * 0.001f;
++      break;
++    case PowerL1:
++    case PowerL2:
++    case PowerL3:
++    case PowerTotal:
++      value = (float)(int32_t)raw * 0.1f;
++      break;
++    case ImportEnergy:
++    case TotalEnergy:
++      value = (float)raw * 0.01f;
++      break;
++    default:
++      value = 0.0f;
++      break;
++  }
++#else
+   memcpy(&value, &raw, sizeof(value));
++#endif
+   if(!isnan(value)) {
+     _values[_index] = value;
+     _updated[_index] = millis();
+diff --git a/src/sdm_meter.h b/src/sdm_meter.h
+index d1d6bd83..9c368159 100644
+--- a/src/sdm_meter.h
++++ b/src/sdm_meter.h
+@@ -8,6 +8,10 @@
+ #include <Arduino.h>
+ #include <MicroTasks.h>
+ 
++#ifndef METER_DTS4921
++#define METER_DTS4921 1
++#endif
++
+ #ifndef SDM_METER_SERIAL
+ #define SDM_METER_SERIAL Serial2
+ #endif
