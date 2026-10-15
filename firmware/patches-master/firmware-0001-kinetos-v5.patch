@@ -1650,7 +1650,7 @@ new file mode 100644
 index 00000000..63f9e302
 --- /dev/null
 +++ b/src/kinetos/kinetos_extras.cpp
-@@ -0,0 +1,333 @@
+@@ -0,0 +1,400 @@
 +#ifdef KINETOS_EXTRAS
 +
 +#include <esp_system.h>
@@ -1842,8 +1842,18 @@ index 00000000..63f9e302
 +class KinetosControllerFeed : public MicroTasks::Task
 +{
 +  private:
++    enum ProbeState {
++      PROBE_INIT = 0,
++      PROBE_F2,
++      PROBE_T0_3P,
++      PROBE_T0_1P,
++      PROBE_READY,
++      PROBE_UNSUPPORTED
++    };
++
++    ProbeState _state = PROBE_INIT;
++    uint8_t _t0Args = 0;
 +    uint8_t _tries = 0;
-+    bool _enabled = false;
 +    bool _busy = false;
 +    uint32_t _lastWh = 0;
 +    bool _ocppIdChecked = false;
@@ -1853,7 +1863,13 @@ index 00000000..63f9e302
 +
 +    unsigned long loop(MicroTasks::WakeReason reason)
 +    {
-+      if(_busy || !evse.isConnected()) {
++      if(_busy) {
++        return 500;
++      }
++
++      if(!evse.isConnected()) {
++        _state = PROBE_INIT;
++        _tries = 0;
 +        return 1000;
 +      }
 +
@@ -1866,23 +1882,65 @@ index 00000000..63f9e302
 +          config_user_commit();
 +        }
 +      }
-+      if(0 != strncmp(evse.getFirmwareVersion(), "8.", 2)) {
-+        return 10 * 1000; // only the Kinetos controller knows these commands
-+      }
 +
-+      if(!_enabled)
++      if(PROBE_INIT == _state || PROBE_F2 == _state)
 +      {
-+        if(_tries >= 6) {
-+          return MicroTask.Infinate;
-+        }
-+        _tries++;
++        _state = PROBE_F2;
 +        _busy = true;
 +        rapiSender.sendCmd("$F2 0", [this](int ret) {
 +          _busy = false;
-+          _enabled = (RAPI_RESPONSE_OK == ret);
-+          DBUGF("kinetos: $F2 0 -> %d", ret);
++          if(RAPI_RESPONSE_OK == ret) {
++            DBUGLN("kinetos: $F2 0 -> OK, probing $T0 3-phase");
++            _tries = 0;
++            _state = PROBE_T0_3P;
++          } else {
++            _tries++;
++            DBUGF("kinetos: $F2 0 -> %d (try %d)", ret, _tries);
++            if(_tries >= 5) {
++              _state = PROBE_UNSUPPORTED;
++            }
++          }
++        });
++        return (PROBE_UNSUPPORTED == _state) ? 60000 : 1000;
++      }
++
++      if(PROBE_T0_3P == _state)
++      {
++        _busy = true;
++        rapiSender.sendCmd("$T0 0 0 0", [this](int ret) {
++          _busy = false;
++          if(RAPI_RESPONSE_OK == ret) {
++            DBUGLN("kinetos: $T0 3-phase OK, feed ready");
++            _t0Args = 3;
++            _state = PROBE_READY;
++          } else {
++            DBUGF("kinetos: $T0 3-phase -> %d, testing 1-phase", ret);
++            _state = PROBE_T0_1P;
++          }
 +        });
 +        return 1000;
++      }
++
++      if(PROBE_T0_1P == _state)
++      {
++        _busy = true;
++        rapiSender.sendCmd("$T0 0", [this](int ret) {
++          _busy = false;
++          if(RAPI_RESPONSE_OK == ret) {
++            DBUGLN("kinetos: $T0 1-phase OK, feed ready");
++            _t0Args = 1;
++            _state = PROBE_READY;
++          } else {
++            DBUGF("kinetos: $T0 1-phase -> %d, meter feed unsupported", ret);
++            _state = PROBE_UNSUPPORTED;
++          }
++        });
++        return 1000;
++      }
++
++      if(PROBE_UNSUPPORTED == _state)
++      {
++        return 60000;
 +      }
 +
 +      kinetos_config_backup();
@@ -1892,10 +1950,17 @@ index 00000000..63f9e302
 +      }
 +
 +      char cmd[48];
-+      snprintf(cmd, sizeof(cmd), "$T0 %lu %lu %lu",
-+        (unsigned long)(sdmMeter.get(SdmMeter::CurrentL1) * 1000),
-+        (unsigned long)(sdmMeter.get(SdmMeter::CurrentL2) * 1000),
-+        (unsigned long)(sdmMeter.get(SdmMeter::CurrentL3) * 1000));
++      if(1 == _t0Args) {
++        float maxA = sdmMeter.get(SdmMeter::CurrentL1);
++        if(sdmMeter.get(SdmMeter::CurrentL2) > maxA) maxA = sdmMeter.get(SdmMeter::CurrentL2);
++        if(sdmMeter.get(SdmMeter::CurrentL3) > maxA) maxA = sdmMeter.get(SdmMeter::CurrentL3);
++        snprintf(cmd, sizeof(cmd), "$T0 %lu", (unsigned long)(maxA * 1000));
++      } else {
++        snprintf(cmd, sizeof(cmd), "$T0 %lu %lu %lu",
++          (unsigned long)(sdmMeter.get(SdmMeter::CurrentL1) * 1000),
++          (unsigned long)(sdmMeter.get(SdmMeter::CurrentL2) * 1000),
++          (unsigned long)(sdmMeter.get(SdmMeter::CurrentL3) * 1000));
++      }
 +      _busy = true;
 +      rapiSender.sendCmd(cmd, [this](int ret) { _busy = false; });
 +
@@ -1910,7 +1975,8 @@ index 00000000..63f9e302
 +    }
 +
 +  public:
-+    bool isEnabled() { return _enabled; }
++    bool isEnabled() { return PROBE_READY == _state; }
++    uint8_t getT0Args() { return _t0Args; }
 +};
 +
 +static KinetosControllerFeed controllerFeed;
@@ -1951,6 +2017,7 @@ index 00000000..63f9e302
 +  doc["pv_share"] = kinetos_pv_share();
 +  doc["powersum"] = doc["power"]; // name used by the Kinetos firmware
 +  doc["controller_meter_feed"] = controllerFeed.isEnabled();
++  doc["controller_feed_t0_args"] = controllerFeed.getT0Args();
 +  doc["config_restored"] = s_configRestored;
 +  doc["config_backup_bytes"] = s_backupJson.length();
 +  kinetos_budget_status(doc);
