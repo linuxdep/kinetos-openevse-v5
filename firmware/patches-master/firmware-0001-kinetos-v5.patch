@@ -519,7 +519,7 @@ diff --git a/platformio.ini b/platformio.ini
 index 1b50a943..3afb045f 100644
 --- a/platformio.ini
 +++ b/platformio.ini
-@@ -456,6 +456,40 @@ build_flags =
+@@ -456,6 +456,41 @@ build_flags =
    -D ETH_CLK_MODE=ETH_CLOCK_GPIO0_IN
    -D ETH_PHY_POWER=16
  
@@ -533,6 +533,7 @@ index 1b50a943..3afb045f 100644
 +  ${common.ws2812fx_lib}
 +build_flags =
 +  ${common.build_flags}
++  -D ENABLE_FULL_RAPI
 +  -D RAPI_PORT=Serial
 +  -D DEBUG_PORT_NULL
 +  -D WIFI_BUTTON=39
@@ -569,7 +570,7 @@ index 1b50a943..3afb045f 100644
  build_flags =
    -std=gnu++17
    -I src/lvgl_tft
-@@ -829,3 +863,12 @@ lib_ignore =
+@@ -829,3 +863,13 @@ lib_ignore =
    EpoxymDNS
    ArduinoMongoose
  lib_compat_mode = off
@@ -581,6 +582,7 @@ index 1b50a943..3afb045f 100644
 +build_flags =
 +  ${env:wt32-eth01-kinetos.build_flags}
 +  -D KINETOS_EXTRAS
++  -D ENABLE_FULL_RAPI
 +  -Wl,--wrap=esp_panic_handler
 diff --git a/src/LedManagerTask.cpp b/src/LedManagerTask.cpp
 index 33f3a774..9b6fb4c9 100644
