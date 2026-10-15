@@ -1,0 +1,94 @@
+diff --git a/src/fs_util.h b/src/fs_util.h
+index 5361b9c2..2bbf265b 100644
+--- a/src/fs_util.h
++++ b/src/fs_util.h
+@@ -1,6 +1,7 @@
+ #ifndef _FS_UTIL_H
+ #define _FS_UTIL_H
+ 
++#include <Arduino.h>
+ #include <LittleFS.h>
+ 
+ // Opening a file with "w"/FILE_WRITE truncates it immediately, so free space
+@@ -11,11 +12,37 @@
+ // Requires `needed` bytes plus an 8 KB safety margin (LittleFS also needs free
+ // blocks for its own metadata/garbage collection, especially on the small 4 MB
+ // 128 KB partition).
++//
++// Note: LittleFS.usedBytes() performs a full block-by-block filesystem traversal
++// (lfs_fs_traverse_). Traversing the flash locks CPU 0 cache via cross-core IPC
++// and can starve IDLE0, triggering the Task Watchdog (TWDT). To prevent this,
++// the result is cached with a 60-second TTL and we yield/feed the watchdog.
+ static inline bool littlefs_has_space(size_t needed)
+ {
++  static unsigned long s_last_check = 0;
++  static size_t s_cached_free = 0;
++  static bool s_has_cache = false;
++  unsigned long now = millis();
++
++  if (s_has_cache && (now - s_last_check < 60000UL)) {
++    return s_cached_free >= needed + 8192;
++  }
++
++  // Yield to allow other tasks (especially IDLE0 on core 0) to run before flash traversal
++  delay(1);
++  feedLoopWDT();
++
+   size_t total = LittleFS.totalBytes();
+   size_t used  = LittleFS.usedBytes();
+   size_t freeb = total > used ? total - used : 0;
++
++  s_cached_free = freeb;
++  s_last_check = now;
++  s_has_cache = true;
++
++  delay(1);
++  feedLoopWDT();
++
+   return freeb >= needed + 8192;
+ }
+ 
+diff --git a/src/main.cpp b/src/main.cpp
+index 209a5aa8..b4f4e62e 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -25,8 +25,10 @@
+  */
+ 
+ #include <Arduino.h>
++#ifdef ENABLE_ARDUINO_OTA
+ #include <WiFiUdp.h>
+ #include <ArduinoOTA.h>               // local OTA update from Arduino IDE
++#endif
+ #include <MongooseCore.h>
+ #include <MicroTasks.h>
+ #include <LittleFS.h>
+diff --git a/src/ota.cpp b/src/ota.cpp
+index 129e2ef8..27b8be87 100644
+--- a/src/ota.cpp
++++ b/src/ota.cpp
+@@ -1,6 +1,7 @@
+ #include "emonesp.h"
+ #include "ota.h"
+ 
++#ifdef ENABLE_ARDUINO_OTA
+ #include <WiFiUdp.h>
+ #include <ArduinoOTA.h> // local OTA update from Arduino IDE
+ #include <FS.h>
+@@ -54,3 +55,16 @@ void ota_loop()
+ {
+   ArduinoOTA.handle();
+ }
++#else
++void ota_setup()
++{
++  // ArduinoOTA disabled by default: avoids opening an unauthenticated UDP port (3232),
++  // avoids premature MDNS initialization before network is up, and avoids lwIP UDP PCB
++  // corruption from concurrent polling in loop().
++  // Firmware updates are performed securely via the web interface (/update).
++}
++
++void ota_loop()
++{
++}
++#endif
