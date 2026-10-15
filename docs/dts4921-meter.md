@@ -67,10 +67,11 @@ cd firmware
 ```
 
 ### Build-Ergebnis
-Nach erfolgreichem Durchlauf liegt die fertige Firmware im Verzeichnis:
-```
-firmware/out/kinetos-v5-v5.2.0-dev-dts4921-18.bin
-```
+Nach erfolgreichem Durchlauf liegen die erzeugten Dateien im Verzeichnis `firmware/out/`:
+- `kinetos-v5-v5.2.0-dev-dts4921-18.bin` (Firmware-Image für das Web-Update)
+- `kinetos-v5-v5.2.0-dev-dts4921-18.elf` (Debug-Symbole)
+- `kinetos-v5-v5.2.0-dev-dts4921-18.bin.sha256` (SHA256-Prüfsummendatei)
+
 Zusätzlich wird beim Build die SHA256-Prüfsumme in der Konsole ausgegeben.
 
 ---

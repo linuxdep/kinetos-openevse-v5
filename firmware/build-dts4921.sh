@@ -45,4 +45,5 @@ if command -v pio >/dev/null; then PIO=(pio); else PIO=(uv tool run --from platf
 mkdir -p "$HERE/out"
 cp .pio/build/kinetos-v5/firmware.bin "$HERE/out/kinetos-v5-$VERSION.bin"
 cp .pio/build/kinetos-v5/firmware.elf "$HERE/out/kinetos-v5-$VERSION.elf"
-sha256sum "$HERE/out/kinetos-v5-$VERSION.bin"
+(cd "$HERE/out" && sha256sum "kinetos-v5-$VERSION.bin" > "kinetos-v5-$VERSION.bin.sha256")
+cat "$HERE/out/kinetos-v5-$VERSION.bin.sha256"
