@@ -45,7 +45,7 @@ Alle Abfragen erfolgen mit Modbus-Funktionscode **`0x03`** (Länge: jeweils 2 Re
 - **Build-Skript:** `firmware/build-dts4921.sh`
   - Nutzt ein separates Arbeitsverzeichnis `firmware/.work-dts4921`.
   - Wendet zuerst die Basis-Kinetos-Patches an (`patches-master/`), gefolgt vom DTS4921-Patch (`patches-dts4921/`).
-  - Erzeugt die Firmware unter dem Namen `kinetos-v5-v5.2.0-dev-dts4921-<rev>.bin`.
+  - Erzeugt die Firmware unter dem Namen `kinetos-v5-v5.2.0-dts4921.<rev>.bin`.
 
 ---
 
@@ -68,9 +68,9 @@ cd firmware
 
 ### Build-Ergebnis
 Nach erfolgreichem Durchlauf liegen die erzeugten Dateien im Verzeichnis `firmware/out/`:
-- `kinetos-v5-v5.2.0-dev-dts4921-18.bin` (Firmware-Image für das Web-Update)
-- `kinetos-v5-v5.2.0-dev-dts4921-18.elf` (Debug-Symbole)
-- `kinetos-v5-v5.2.0-dev-dts4921-18.bin.sha256` (SHA256-Prüfsummendatei)
+- `kinetos-v5-v5.2.0-dts4921.21.bin` (Firmware-Image für das Web-Update)
+- `kinetos-v5-v5.2.0-dts4921.21.elf` (Debug-Symbole)
+- `kinetos-v5-v5.2.0-dts4921.21.bin.sha256` (SHA256-Prüfsummendatei)
 
 Zusätzlich wird beim Build die SHA256-Prüfsumme in der Konsole ausgegeben.
 
@@ -79,7 +79,7 @@ Zusätzlich wird beim Build die SHA256-Prüfsumme in der Konsole ausgegeben.
 ## 5. Firmware-Update auf der Wallbox
 1. Das Webinterface der Wallbox im Browser öffnen.
 2. Zur Seite **System / Update** (`/update`) navigieren.
-3. Die Binärdatei `kinetos-v5-v5.2.0-dev-dts4921-18.bin` auswählen und flashen.
+3. Die Binärdatei `kinetos-v5-v5.2.0-dts4921.21.bin` auswählen und flashen (bzw. online über den Button auf der Firmware-Seite aktualisieren).
 4. Nach dem Neustart liest die Wallbox die Phasenwerte (Spannung, Strom, Leistung, Zählerstand) direkt vom DTS4921 aus.
 
 ---

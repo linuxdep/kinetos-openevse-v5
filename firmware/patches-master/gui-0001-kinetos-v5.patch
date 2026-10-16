@@ -1,15 +1,15 @@
 diff --git a/.env.production b/.env.production
 new file mode 100644
-index 0000000..f31052a
+index 0000000..6e970d3
 --- /dev/null
 +++ b/.env.production
 @@ -0,0 +1,4 @@
 +# Kinetos build: offer firmware updates from our own GitHub releases
-+# (assets named <buildenv>-<version>.bin, e.g. kinetos-v5-v5.2.0-dev-kinetos.18.bin).
++# (assets named <buildenv>-<version>.bin, e.g. kinetos-v5-v5.2.0-dts4921.21.bin).
 +# Loaded by `vite build` only; dev, mock and tests keep the upstream default.
-+VITE_RELEASES_URL=https://api.github.com/repos/chloepriceless/kinetos-openevse-v5/releases
++VITE_RELEASES_URL=https://api.github.com/repos/linuxdep/kinetos-openevse-v5/releases
 diff --git a/AGENTS.md b/AGENTS.md
-index 43d06d2..2846145 100644
+index 43d06d2..5a07428 100644
 --- a/AGENTS.md
 +++ b/AGENTS.md
 @@ -25,18 +25,14 @@ npm run screenshots   # regenerate docs/screenshots/*.png (deterministic)
@@ -40,7 +40,7 @@ index 43d06d2..2846145 100644
    endpoint the app calls — extend the fixtures when adding an API call.
  
 diff --git a/dev/fixtures/config.json b/dev/fixtures/config.json
-index 4a83a42..8ab41c0 100644
+index 4a83a42..087681e 100644
 --- a/dev/fixtures/config.json
 +++ b/dev/fixtures/config.json
 @@ -1 +1,6 @@
@@ -55,7 +55,7 @@ index 4a83a42..8ab41c0 100644
 \ No newline at end of file
 diff --git a/dev/fixtures/kinetos_sessions.csv b/dev/fixtures/kinetos_sessions.csv
 new file mode 100644
-index 0000000..24f4498
+index 0000000..d3b33dc
 --- /dev/null
 +++ b/dev/fixtures/kinetos_sessions.csv
 @@ -0,0 +1,9 @@
@@ -69,7 +69,7 @@ index 0000000..24f4498
 +2026-05-14T17:48:51;2026-05-14T19:02:27;74;8.73;1281.60;1290.33;EE55FF66;;
 +2026-05-19T18:22:05;2026-05-19T21:58:40;217;19.88;1290.33;1310.21;AA11BB22;Alice;1
 diff --git a/dev/fixtures/status.json b/dev/fixtures/status.json
-index fa44878..e90a052 100644
+index fa44878..b457a2c 100644
 --- a/dev/fixtures/status.json
 +++ b/dev/fixtures/status.json
 @@ -109,5 +109,28 @@
@@ -105,7 +105,7 @@ index fa44878..e90a052 100644
 +  "gpio39": 1
 +}
 diff --git a/dev/mock-plugin.js b/dev/mock-plugin.js
-index 4639b41..3cf60aa 100644
+index 4639b41..ffb2ac2 100644
 --- a/dev/mock-plugin.js
 +++ b/dev/mock-plugin.js
 @@ -132,6 +132,27 @@ export function mockPlugin() {
@@ -221,7 +221,7 @@ index 4639b41..3cf60aa 100644
            res.writeHead(200, { 'Content-Type': 'application/json' })
            res.end(JSON.stringify({ msg: 'done' }))
 diff --git a/scripts/build-locale-values.mjs b/scripts/build-locale-values.mjs
-index bae9155..d8b8389 100644
+index bae9155..d62f548 100644
 --- a/scripts/build-locale-values.mjs
 +++ b/scripts/build-locale-values.mjs
 @@ -20,7 +20,9 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -236,7 +236,7 @@ index bae9155..d8b8389 100644
  // Encoded paths use a NUL separator (see hydrate.js); show them dotted so the
  // out-of-sync error names keys the way a translator reads them.
 diff --git a/scripts/screenshots.config.js b/scripts/screenshots.config.js
-index b564ca6..5e5b0fb 100644
+index b564ca6..94ca07f 100644
 --- a/scripts/screenshots.config.js
 +++ b/scripts/screenshots.config.js
 @@ -50,6 +50,7 @@ const entries = [
@@ -256,7 +256,7 @@ index b564ca6..5e5b0fb 100644
    // so it is intentionally omitted from the default screenshot set.
    { name: 'settings-emoncms', route: '/settings/emoncms' },
 diff --git a/scripts/screenshots.mjs b/scripts/screenshots.mjs
-index d9cb0c0..8d76915 100644
+index d9cb0c0..d808a75 100644
 --- a/scripts/screenshots.mjs
 +++ b/scripts/screenshots.mjs
 @@ -22,7 +22,8 @@ const outDir = join(root, 'docs', 'screenshots')
@@ -270,7 +270,7 @@ index d9cb0c0..8d76915 100644
  
  const onlyArg = process.argv.indexOf('--only')
 diff --git a/src/lib/__tests__/utils.test.js b/src/lib/__tests__/utils.test.js
-index 789c4c8..73a1135 100644
+index 789c4c8..441b3b2 100644
 --- a/src/lib/__tests__/utils.test.js
 +++ b/src/lib/__tests__/utils.test.js
 @@ -239,6 +239,18 @@ describe('compareVersion', () => {
@@ -294,7 +294,7 @@ index 789c4c8..73a1135 100644
  describe('miles2km', () => {
 diff --git a/src/lib/components/history/SessionList.svelte b/src/lib/components/history/SessionList.svelte
 new file mode 100644
-index 0000000..374bfed
+index 0000000..21a8478
 --- /dev/null
 +++ b/src/lib/components/history/SessionList.svelte
 @@ -0,0 +1,75 @@
@@ -374,25 +374,126 @@ index 0000000..374bfed
 +  </Card>
 +{/if}
 diff --git a/src/lib/config/__tests__/firmware.test.js b/src/lib/config/__tests__/firmware.test.js
-index d5be4c4..6df7e66 100644
+index d5be4c4..9ca3aa7 100644
 --- a/src/lib/config/__tests__/firmware.test.js
 +++ b/src/lib/config/__tests__/firmware.test.js
-@@ -1,6 +1,6 @@
+@@ -1,6 +1,15 @@
  // src/lib/config/__tests__/firmware.test.js
  import { describe, it, expect } from 'vitest'
 -import { classifyReleases, findAsset, updateAvailable } from '../firmware.js'
-+import { classifyReleases, findAsset, updateAvailable, RELEASES_URL, DEFAULT_RELEASES_URL } from '../firmware.js'
++import {
++  classifyReleases,
++  findAsset,
++  updateAvailable,
++  getVariant,
++  getBuildNumber,
++  compareKinetosVersion,
++  RELEASES_URL,
++  DEFAULT_RELEASES_URL,
++} from '../firmware.js'
  
  const RELEASES = [
    { tag_name: 'v5.1.2', name: 'v5.1.2', prerelease: false, assets: [
-@@ -40,8 +40,27 @@ describe('updateAvailable', () => {
+@@ -21,6 +30,57 @@ describe('classifyReleases', () => {
+     expect(classifyReleases([])).toEqual({ release: null, prerelease: null, daily: null })
+     expect(classifyReleases(undefined)).toEqual({ release: null, prerelease: null, daily: null })
+   })
++  it('filters releases by variant when specified', () => {
++    const multiReleases = [
++      {
++        tag_name: 'v5.2.0-sdm630.1',
++        prerelease: false,
++        assets: [{ name: 'kinetos-v5-v5.2.0-sdm630.1.bin' }],
++      },
++      {
++        tag_name: 'v5.2.0-dts4921.21',
++        prerelease: false,
++        assets: [{ name: 'kinetos-v5-v5.2.0-dts4921.21.bin' }],
++      },
++      {
++        tag_name: 'v5.2.0-kinetos.18',
++        prerelease: false,
++        assets: [{ name: 'kinetos-v5-v5.2.0-kinetos.18.bin' }],
++      },
++    ]
++    const cDts = classifyReleases(multiReleases, 'kinetos-v5', 'dts4921')
++    expect(cDts.release.tag_name).toBe('v5.2.0-dts4921.21')
++
++    const cKinetos = classifyReleases(multiReleases, 'kinetos-v5', 'kinetos')
++    expect(cKinetos.release.tag_name).toBe('v5.2.0-kinetos.18')
++
++    const cNone = classifyReleases(multiReleases, 'kinetos-v5', 'unknown_meter')
++    expect(cNone.release).toBe(null)
++  })
++})
++
++describe('getVariant and getBuildNumber', () => {
++  it('extracts the meter variant correctly', () => {
++    expect(getVariant('v5.2.0-dts4921.21')).toBe('dts4921')
++    expect(getVariant('v5.2.0-dev-dts4921-20')).toBe('dts4921')
++    expect(getVariant('v5.2.0-dev-dts4921.20')).toBe('dts4921')
++    expect(getVariant('kinetos-v5-v5.2.0-dts4921.21.bin')).toBe('dts4921')
++    expect(getVariant('kinetos-v5-v5.2.0-dev-dts4921-20.bin')).toBe('dts4921')
++    expect(getVariant('v5.2.0-kinetos.18')).toBe('kinetos')
++    expect(getVariant('v5.2.0-dev-kinetos.18')).toBe('kinetos')
++    expect(getVariant('kinetos-v5-v5.2.0-kinetos.18.bin')).toBe('kinetos')
++    expect(getVariant('v5.2.0-sdm630.1')).toBe('sdm630')
++    expect(getVariant('v5.1.2')).toBe('')
++    expect(getVariant('v5.2.0-rc1')).toBe('')
++  })
++
++  it('extracts the build number correctly', () => {
++    expect(getBuildNumber('v5.2.0-dts4921.21')).toBe(21)
++    expect(getBuildNumber('v5.2.0-dev-dts4921-20')).toBe(20)
++    expect(getBuildNumber('kinetos-v5-v5.2.0-dts4921.21.bin')).toBe(21)
++    expect(getBuildNumber('v5.2.0-kinetos.18')).toBe(18)
++    expect(getBuildNumber('v5.1.2')).toBe(null)
++  })
+ })
+ 
+ describe('findAsset', () => {
+@@ -32,6 +92,19 @@ describe('findAsset', () => {
+     expect(findAsset(RELEASES[1], 'esp32-gw')).toBe(null)
+     expect(findAsset(null, 'esp32-gw')).toBe(null)
+   })
++  it('matches only assets of the requested variant', () => {
++    const rel = {
++      assets: [
++        { name: 'kinetos-v5-v5.2.0-kinetos.18.bin' },
++        { name: 'kinetos-v5-v5.2.0-dts4921.21.bin' },
++        { name: 'kinetos-v5-v5.2.0-sdm630.1.bin' },
++      ],
++    }
++    expect(findAsset(rel, 'kinetos-v5', 'dts4921').name).toBe('kinetos-v5-v5.2.0-dts4921.21.bin')
++    expect(findAsset(rel, 'kinetos-v5', 'kinetos').name).toBe('kinetos-v5-v5.2.0-kinetos.18.bin')
++    expect(findAsset(rel, 'kinetos-v5', 'sdm630').name).toBe('kinetos-v5-v5.2.0-sdm630.1.bin')
++    expect(findAsset(rel, 'kinetos-v5', 'unknown')).toBe(null)
++  })
+ })
+ 
+ describe('updateAvailable', () => {
+@@ -40,8 +113,41 @@ describe('updateAvailable', () => {
      expect(updateAvailable('v5.1.2', 'v5.1.2')).toBe(false)
      expect(updateAvailable('v5.0.0', 'v5.1.2')).toBe(false)
    })
 +  it('offers newer Kinetos builds only', () => {
 +    expect(updateAvailable('v5.2.0-dev-kinetos.18', 'v5.2.0-dev-kinetos.9')).toBe(true)
 +    expect(updateAvailable('v5.2.0-dev-kinetos.17', 'v5.2.0-dev-kinetos.18')).toBe(false)
-+    expect(updateAvailable('v5.2.0-dev-kinetos.9', 'v5.1.5')).toBe(true)
++    expect(updateAvailable('v5.2.0-kinetos.19', 'v5.2.0-kinetos.18')).toBe(true)
++    expect(updateAvailable('v5.2.0-kinetos.18', 'v5.2.0-kinetos.18')).toBe(false)
++  })
++  it('handles the transition from old hyphen format to new dot format for dts4921', () => {
++    expect(updateAvailable('v5.2.0-dts4921.21', 'v5.2.0-dev-dts4921-20')).toBe(true)
++    expect(updateAvailable('v5.2.0-dts4921.20', 'v5.2.0-dev-dts4921-20')).toBe(false)
++    expect(updateAvailable('v5.2.0-dts4921.19', 'v5.2.0-dev-dts4921-20')).toBe(false)
++    expect(updateAvailable('v5.2.0-dts4921.22', 'v5.2.0-dts4921.21')).toBe(true)
++    expect(updateAvailable('v5.2.0-dts4921.21', 'v5.2.0-dts4921.21')).toBe(false)
++  })
++  it('NEVER offers an update for a different meter variant', () => {
++    expect(updateAvailable('v5.2.0-kinetos.99', 'v5.2.0-dts4921.21')).toBe(false)
++    expect(updateAvailable('v5.2.0-sdm630.99', 'v5.2.0-dts4921.21')).toBe(false)
++    expect(updateAvailable('v5.2.0-dts4921.99', 'v5.2.0-kinetos.18')).toBe(false)
++    expect(updateAvailable('v5.2.0-dts4921.99', 'v5.2.0-sdm630.1')).toBe(false)
 +  })
    it('is false for an unparseable installed version', () => {
      expect(updateAvailable('v5.2.0', 'local__abc_modified')).toBe(false)
@@ -409,12 +510,12 @@ index d5be4c4..6df7e66 100644
 +
 +describe('findAsset (Kinetos)', () => {
 +  it('matches kinetos-v5-<version>.bin by buildenv prefix', () => {
-+    const rel = { assets: [{ name: 'kinetos-v5-v5.2.0-dev-kinetos.18.bin' }, { name: 'other.bin' }] }
-+    expect(findAsset(rel, 'kinetos-v5').name).toBe('kinetos-v5-v5.2.0-dev-kinetos.18.bin')
++    const rel = { assets: [{ name: 'kinetos-v5-v5.2.0-dts4921.21.bin' }, { name: 'other.bin' }] }
++    expect(findAsset(rel, 'kinetos-v5').name).toBe('kinetos-v5-v5.2.0-dts4921.21.bin')
 +  })
 +})
 diff --git a/src/lib/config/__tests__/pages.test.js b/src/lib/config/__tests__/pages.test.js
-index 10428d0..0eb0d21 100644
+index 10428d0..e56dada 100644
 --- a/src/lib/config/__tests__/pages.test.js
 +++ b/src/lib/config/__tests__/pages.test.js
 @@ -3,8 +3,8 @@ import { describe, it, expect } from 'vitest'
@@ -468,10 +569,10 @@ index 10428d0..0eb0d21 100644
      const keysFor = (opts) =>
        pagesBySection({ tft_theme: 'dark' }, opts).flatMap((g) => g.pages.map((p) => p.key))
 diff --git a/src/lib/config/firmware.js b/src/lib/config/firmware.js
-index 85afb56..f8d72a5 100644
+index 85afb56..f492d27 100644
 --- a/src/lib/config/firmware.js
 +++ b/src/lib/config/firmware.js
-@@ -2,9 +2,13 @@
+@@ -2,9 +2,52 @@
  // GitHub firmware-release helpers for the Firmware page.
  import { compareVersion } from '../utils.js'
  
@@ -483,11 +584,115 @@ index 85afb56..f8d72a5 100644
 +// fork can offer its own GitHub releases; upstream's list otherwise.
 +export const RELEASES_URL = import.meta.env?.VITE_RELEASES_URL || DEFAULT_RELEASES_URL
 +
++/** Extract the meter or build variant from a version string or asset name (e.g. 'dts4921', 'kinetos'). */
++export function getVariant(str) {
++  if (typeof str !== 'string') return ''
++  const m = str.match(/v\d+\.\d+\.\d+(?:-dev)?-([a-zA-Z0-9]+)[.-](\d+)/i)
++  if (!m) return ''
++  const variant = m[1].toLowerCase()
++  return variant === 'dev' ? '' : variant
++}
++
++/** Extract the trailing build number from a Kinetos version string or asset name. */
++export function getBuildNumber(str) {
++  if (typeof str !== 'string') return null
++  const m = str.match(/v\d+\.\d+\.\d+(?:-dev)?-[a-zA-Z0-9]+[.-](\d+)/i)
++  return m ? parseInt(m[1], 10) : null
++}
++
++/** Compare versions supporting Kinetos variant build numbers across formats (-20 vs .21). */
++export function compareKinetosVersion(latest, installed) {
++  if (typeof latest !== 'string' || typeof installed !== 'string') return 0
++  const latestVar = getVariant(latest)
++  const instVar = getVariant(installed)
++
++  if (latestVar && instVar && latestVar === instVar) {
++    const cleanLatest = latest.replace(/(?:-dev)?-[a-zA-Z0-9]+[.-]\d+.*$/, '')
++    const cleanInstalled = installed.replace(/(?:-dev)?-[a-zA-Z0-9]+[.-]\d+.*$/, '')
++    const baseCmp = compareVersion(cleanLatest, cleanInstalled)
++    if (baseCmp !== 0) return baseCmp
++    const lNum = getBuildNumber(latest)
++    const iNum = getBuildNumber(installed)
++    if (lNum !== null && iNum !== null) {
++      if (lNum > iNum) return 1
++      if (lNum < iNum) return -1
++      return 0
++    }
++  }
++
++  return compareVersion(latest, installed)
++}
++
  /** Fetch the GitHub releases. Returns [] on any failure (never throws). */
  export async function fetchReleases() {
    try {
+@@ -17,9 +60,29 @@ export async function fetchReleases() {
+   }
+ }
+ 
++/** The release asset whose name starts with buildenv, matches targetVariant (if given) and ends with .bin. */
++export function findAsset(release, buildenv, targetVariant = '') {
++  if (!release || !Array.isArray(release.assets) || !buildenv) return null
++  const expectedVariant = (targetVariant || '').toLowerCase()
++  return (
++    release.assets.find((a) => {
++      if (!a || typeof a.name !== 'string') return false
++      if (!a.name.startsWith(buildenv) || !a.name.endsWith('.bin')) return false
++      if (expectedVariant) {
++        const assetVariant = getVariant(a.name)
++        if (assetVariant !== expectedVariant) return false
++      }
++      return true
++    }) ?? null
++  )
++}
++
+ /** Split releases into the stable / pre-release / daily channels. */
+-export function classifyReleases(releases) {
+-  const list = Array.isArray(releases) ? releases : []
++export function classifyReleases(releases, buildenv = '', targetVariant = '') {
++  let list = Array.isArray(releases) ? releases : []
++  if (buildenv) {
++    list = list.filter((r) => findAsset(r, buildenv, targetVariant) !== null)
++  }
+   return {
+     release: list.find((r) => r && r.prerelease === false) ?? null,
+     prerelease:
+@@ -30,25 +93,16 @@ export function classifyReleases(releases) {
+   }
+ }
+ 
+-/** The release asset whose name starts with buildenv and ends with .bin. */
+-export function findAsset(release, buildenv) {
+-  if (!release || !Array.isArray(release.assets) || !buildenv) return null
+-  return (
+-    release.assets.find(
+-      (a) =>
+-        a &&
+-        typeof a.name === 'string' &&
+-        a.name.startsWith(buildenv) &&
+-        a.name.endsWith('.bin'),
+-    ) ?? null
+-  )
+-}
+-
+-/** True only when `latestName` is a strictly newer parseable version. */
++/** True only when `latestName` is a strictly newer parseable version of the matching variant. */
+ export function updateAvailable(latestName, installedVersion) {
+   if (!latestName || !installedVersion) return false
++  const installedVariant = getVariant(installedVersion)
++  const latestVariant = getVariant(latestName)
++  if (installedVariant && latestVariant !== installedVariant) {
++    return false
++  }
+   try {
+-    return compareVersion(latestName, installedVersion) === 1
++    return compareKinetosVersion(latestName, installedVersion) === 1
+   } catch {
+     return false
+   }
 diff --git a/src/lib/config/pages.js b/src/lib/config/pages.js
-index 7c34b07..04ea218 100644
+index 7c34b07..dab441a 100644
 --- a/src/lib/config/pages.js
 +++ b/src/lib/config/pages.js
 @@ -10,6 +10,9 @@ export const SETTINGS_PAGES = [
@@ -562,7 +767,7 @@ index 4b09702..41537e3 100644
 -  }
 -})
 diff --git a/src/lib/i18n/__tests__/index.test.js b/src/lib/i18n/__tests__/index.test.js
-index bd13941..c2ff52d 100644
+index bd13941..626fb7e 100644
 --- a/src/lib/i18n/__tests__/index.test.js
 +++ b/src/lib/i18n/__tests__/index.test.js
 @@ -1,30 +1,25 @@
@@ -668,7 +873,7 @@ index 62fcc0b..0000000
 -  }
 -})
 diff --git a/src/lib/i18n/en.json b/src/lib/i18n/en.json
-index 246246e..f13311b 100644
+index 246246e..c5cf065 100644
 --- a/src/lib/i18n/en.json
 +++ b/src/lib/i18n/en.json
 @@ -209,6 +209,7 @@
@@ -882,7 +1087,7 @@ index 246246e..f13311b 100644
    }
  }
 diff --git a/src/lib/i18n/index.js b/src/lib/i18n/index.js
-index 9082548..264f7e2 100644
+index 9082548..a1dff29 100644
 --- a/src/lib/i18n/index.js
 +++ b/src/lib/i18n/index.js
 @@ -1,23 +1,9 @@
@@ -911,7 +1116,7 @@ index 9082548..264f7e2 100644
  // The device's configured language (config.lang) overrides this once loaded.
  function initialLocale() {
 diff --git a/src/lib/i18n/locales.js b/src/lib/i18n/locales.js
-index 30e2a3b..62de72a 100644
+index 30e2a3b..3accd06 100644
 --- a/src/lib/i18n/locales.js
 +++ b/src/lib/i18n/locales.js
 @@ -1,9 +1,11 @@
@@ -4870,7 +5075,7 @@ index 1ba4ed2..0000000
 -}
 diff --git a/src/lib/kinetos/__tests__/charger.test.js b/src/lib/kinetos/__tests__/charger.test.js
 new file mode 100644
-index 0000000..b4803de
+index 0000000..26763b4
 --- /dev/null
 +++ b/src/lib/kinetos/__tests__/charger.test.js
 @@ -0,0 +1,24 @@
@@ -4900,7 +5105,7 @@ index 0000000..b4803de
 +})
 diff --git a/src/lib/kinetos/__tests__/dimming.test.js b/src/lib/kinetos/__tests__/dimming.test.js
 new file mode 100644
-index 0000000..488b504
+index 0000000..78e0566
 --- /dev/null
 +++ b/src/lib/kinetos/__tests__/dimming.test.js
 @@ -0,0 +1,47 @@
@@ -4953,7 +5158,7 @@ index 0000000..488b504
 +})
 diff --git a/src/lib/kinetos/__tests__/fx.test.js b/src/lib/kinetos/__tests__/fx.test.js
 new file mode 100644
-index 0000000..1bdf1a6
+index 0000000..1932e00
 --- /dev/null
 +++ b/src/lib/kinetos/__tests__/fx.test.js
 @@ -0,0 +1,26 @@
@@ -4985,7 +5190,7 @@ index 0000000..1bdf1a6
 +})
 diff --git a/src/lib/kinetos/__tests__/metrics.test.js b/src/lib/kinetos/__tests__/metrics.test.js
 new file mode 100644
-index 0000000..a6a62a8
+index 0000000..c3b5eb0
 --- /dev/null
 +++ b/src/lib/kinetos/__tests__/metrics.test.js
 @@ -0,0 +1,72 @@
@@ -5063,7 +5268,7 @@ index 0000000..a6a62a8
 +})
 diff --git a/src/lib/kinetos/__tests__/rfidCars.test.js b/src/lib/kinetos/__tests__/rfidCars.test.js
 new file mode 100644
-index 0000000..f2260fa
+index 0000000..cd9b136
 --- /dev/null
 +++ b/src/lib/kinetos/__tests__/rfidCars.test.js
 @@ -0,0 +1,47 @@
@@ -5116,7 +5321,7 @@ index 0000000..f2260fa
 +})
 diff --git a/src/lib/kinetos/__tests__/sessions.test.js b/src/lib/kinetos/__tests__/sessions.test.js
 new file mode 100644
-index 0000000..4cc470c
+index 0000000..05d3beb
 --- /dev/null
 +++ b/src/lib/kinetos/__tests__/sessions.test.js
 @@ -0,0 +1,101 @@
@@ -5223,7 +5428,7 @@ index 0000000..4cc470c
 +})
 diff --git a/src/lib/kinetos/__tests__/status.test.js b/src/lib/kinetos/__tests__/status.test.js
 new file mode 100644
-index 0000000..707e3c4
+index 0000000..1335702
 --- /dev/null
 +++ b/src/lib/kinetos/__tests__/status.test.js
 @@ -0,0 +1,67 @@
@@ -5296,7 +5501,7 @@ index 0000000..707e3c4
 +})
 diff --git a/src/lib/kinetos/__tests__/teslamate.test.js b/src/lib/kinetos/__tests__/teslamate.test.js
 new file mode 100644
-index 0000000..882ce5f
+index 0000000..bcfd200
 --- /dev/null
 +++ b/src/lib/kinetos/__tests__/teslamate.test.js
 @@ -0,0 +1,27 @@
@@ -5329,7 +5534,7 @@ index 0000000..882ce5f
 +})
 diff --git a/src/lib/kinetos/charger.js b/src/lib/kinetos/charger.js
 new file mode 100644
-index 0000000..b806693
+index 0000000..fdb6b7e
 --- /dev/null
 +++ b/src/lib/kinetos/charger.js
 @@ -0,0 +1,17 @@
@@ -5352,7 +5557,7 @@ index 0000000..b806693
 +}
 diff --git a/src/lib/kinetos/dimming.js b/src/lib/kinetos/dimming.js
 new file mode 100644
-index 0000000..a55c55f
+index 0000000..dcaad25
 --- /dev/null
 +++ b/src/lib/kinetos/dimming.js
 @@ -0,0 +1,35 @@
@@ -5393,7 +5598,7 @@ index 0000000..a55c55f
 +}
 diff --git a/src/lib/kinetos/fx.js b/src/lib/kinetos/fx.js
 new file mode 100644
-index 0000000..cad1207
+index 0000000..6a9bfc2
 --- /dev/null
 +++ b/src/lib/kinetos/fx.js
 @@ -0,0 +1,21 @@
@@ -5420,7 +5625,7 @@ index 0000000..cad1207
 +}
 diff --git a/src/lib/kinetos/metrics.js b/src/lib/kinetos/metrics.js
 new file mode 100644
-index 0000000..3447978
+index 0000000..66871f3
 --- /dev/null
 +++ b/src/lib/kinetos/metrics.js
 @@ -0,0 +1,66 @@
@@ -5492,7 +5697,7 @@ index 0000000..3447978
 +}
 diff --git a/src/lib/kinetos/rfidCars.js b/src/lib/kinetos/rfidCars.js
 new file mode 100644
-index 0000000..2d5fb3f
+index 0000000..cd4af7d
 --- /dev/null
 +++ b/src/lib/kinetos/rfidCars.js
 @@ -0,0 +1,62 @@
@@ -5560,7 +5765,7 @@ index 0000000..2d5fb3f
 +}
 diff --git a/src/lib/kinetos/sessions.js b/src/lib/kinetos/sessions.js
 new file mode 100644
-index 0000000..0414772
+index 0000000..32b8367
 --- /dev/null
 +++ b/src/lib/kinetos/sessions.js
 @@ -0,0 +1,145 @@
@@ -5711,7 +5916,7 @@ index 0000000..0414772
 +}
 diff --git a/src/lib/kinetos/status.js b/src/lib/kinetos/status.js
 new file mode 100644
-index 0000000..97ee90c
+index 0000000..2c54628
 --- /dev/null
 +++ b/src/lib/kinetos/status.js
 @@ -0,0 +1,41 @@
@@ -5758,7 +5963,7 @@ index 0000000..97ee90c
 +}
 diff --git a/src/lib/kinetos/teslamate.js b/src/lib/kinetos/teslamate.js
 new file mode 100644
-index 0000000..18aff6c
+index 0000000..d3c0c0c
 --- /dev/null
 +++ b/src/lib/kinetos/teslamate.js
 @@ -0,0 +1,25 @@
@@ -5788,7 +5993,7 @@ index 0000000..18aff6c
 +  ]
 +}
 diff --git a/src/lib/routes.js b/src/lib/routes.js
-index d3c5c62..4337a71 100644
+index d3c5c62..c9e797f 100644
 --- a/src/lib/routes.js
 +++ b/src/lib/routes.js
 @@ -11,6 +11,7 @@ import Network from '../routes/settings/Network.svelte'
@@ -5824,7 +6029,7 @@ index d3c5c62..4337a71 100644
  
  // System pages — override the placeholders set above.
 diff --git a/src/routes/History.svelte b/src/routes/History.svelte
-index b19be6b..b2141f4 100644
+index b19be6b..8ecbd74 100644
 --- a/src/routes/History.svelte
 +++ b/src/routes/History.svelte
 @@ -3,6 +3,7 @@
@@ -6069,7 +6274,7 @@ index b19be6b..b2141f4 100644
 +  </Modal>
 +{/if}
 diff --git a/src/routes/Monitoring.svelte b/src/routes/Monitoring.svelte
-index e9e2fc0..66dadb4 100644
+index e9e2fc0..e8b8eeb 100644
 --- a/src/routes/Monitoring.svelte
 +++ b/src/routes/Monitoring.svelte
 @@ -13,6 +13,7 @@
@@ -6097,7 +6302,7 @@ index e9e2fc0..66dadb4 100644
        ? [{ group: vehicleMetrics($status_store, $config_store), expanded: desktop }]
        : []),
 diff --git a/src/routes/__tests__/History.test.js b/src/routes/__tests__/History.test.js
-index 084fc7b..cd1b59b 100644
+index 084fc7b..f9b9f92 100644
 --- a/src/routes/__tests__/History.test.js
 +++ b/src/routes/__tests__/History.test.js
 @@ -13,6 +13,8 @@ import { history_store } from '../../lib/stores/history.js'
@@ -6205,7 +6410,7 @@ index 084fc7b..cd1b59b 100644
 +  })
 +})
 diff --git a/src/routes/__tests__/Monitoring.test.js b/src/routes/__tests__/Monitoring.test.js
-index 38f68ec..d2c7a66 100644
+index 38f68ec..f344028 100644
 --- a/src/routes/__tests__/Monitoring.test.js
 +++ b/src/routes/__tests__/Monitoring.test.js
 @@ -84,4 +84,28 @@ describe('Monitoring', () => {
@@ -6238,7 +6443,7 @@ index 38f68ec..d2c7a66 100644
 +  })
  })
 diff --git a/src/routes/__tests__/Settings.test.js b/src/routes/__tests__/Settings.test.js
-index 20df39b..2dbaf51 100644
+index 20df39b..ba4409f 100644
 --- a/src/routes/__tests__/Settings.test.js
 +++ b/src/routes/__tests__/Settings.test.js
 @@ -28,8 +28,9 @@ describe('Settings hub', () => {
@@ -6254,7 +6459,7 @@ index 20df39b..2dbaf51 100644
      const { getAllByRole } = render(Settings)
      const links = getAllByRole('link')
 diff --git a/src/routes/settings/About.svelte b/src/routes/settings/About.svelte
-index 1fafa61..e52eeb9 100644
+index 1fafa61..2ee08ef 100644
 --- a/src/routes/settings/About.svelte
 +++ b/src/routes/settings/About.svelte
 @@ -6,6 +6,19 @@
@@ -6320,7 +6525,7 @@ index 1fafa61..e52eeb9 100644
        <a
 diff --git a/src/routes/settings/Dimming.svelte b/src/routes/settings/Dimming.svelte
 new file mode 100644
-index 0000000..f2b9c97
+index 0000000..9772afb
 --- /dev/null
 +++ b/src/routes/settings/Dimming.svelte
 @@ -0,0 +1,147 @@
@@ -6472,7 +6677,7 @@ index 0000000..f2b9c97
 +  </ConfigSection>
 +</ConfigPage>
 diff --git a/src/routes/settings/Display.svelte b/src/routes/settings/Display.svelte
-index 6ddb2bd..873015f 100644
+index 6ddb2bd..b7a0eca 100644
 --- a/src/routes/settings/Display.svelte
 +++ b/src/routes/settings/Display.svelte
 @@ -9,6 +9,7 @@
@@ -6526,7 +6731,7 @@ index 6ddb2bd..873015f 100644
      <ConfigSection title={$_('config.display.lcd')}>
        <FormField
 diff --git a/src/routes/settings/Evse.svelte b/src/routes/settings/Evse.svelte
-index ea5d3b3..83da325 100644
+index ea5d3b3..627d786 100644
 --- a/src/routes/settings/Evse.svelte
 +++ b/src/routes/settings/Evse.svelte
 @@ -3,6 +3,10 @@
@@ -6696,8 +6901,70 @@ index ea5d3b3..83da325 100644
  
    <ConfigSection title={$_('config.evse.sensor')}>
      <FormField label={$_('config.evse.scale')} status={$ss.scale ?? 'idle'}>
+diff --git a/src/routes/settings/Firmware.svelte b/src/routes/settings/Firmware.svelte
+index 8c74668..d52e772 100644
+--- a/src/routes/settings/Firmware.svelte
++++ b/src/routes/settings/Firmware.svelte
+@@ -2,7 +2,7 @@
+ <script>
+   import { _, } from 'svelte-i18n'
+   import { onMount } from 'svelte'
+-  import { classifyReleases, findAsset, updateAvailable, fetchReleases }
++    import { classifyReleases, findAsset, updateAvailable, fetchReleases, getVariant }
+     from '../../lib/config/firmware.js'
+   import { config_store } from '../../lib/stores/config.js'
+   import { status_store } from '../../lib/stores/status.js'
+@@ -62,10 +62,11 @@
+     if (otaState === 'failed') uploading = false
+   })
+ 
+-  // ── online (GitHub) updates ─────────────────────────────────────────────
++    // ── online (GitHub) updates ─────────────────────────────────────────────
+   let releases = $state(null) // null = loading, [] = failed/empty
+   let buildenv = $derived($config_store?.buildenv ?? '')
+   let installed = $derived($config_store?.version ?? '')
++  let installedVariant = $derived(getVariant(installed))
+ 
+   // Every channel GitHub returned (release / prerelease / daily). Each may
+   // or may not have an asset matching this device's buildenv — we still
+@@ -73,7 +74,7 @@
+   // action just changes (Install / Installed badge / 'no build' note).
+   let channels = $derived(() => {
+     if (!releases) return []
+-    const c = classifyReleases(releases)
++    const c = classifyReleases(releases, buildenv, installedVariant)
+     return [
+       { key: 'release', rel: c.release },
+       { key: 'prerelease', rel: c.prerelease },
+@@ -83,7 +84,7 @@
+       .map(({ key, rel }) => ({
+         key,
+         version: rel?.name ?? rel?.tag_name ?? '',
+-        asset: findAsset(rel, buildenv),
++        asset: findAsset(rel, buildenv, installedVariant),
+       }))
+   })
+ 
+@@ -95,12 +96,15 @@
+ 
+   /** True when this channel's published version matches what's installed. */
+   function isInstalled(ch) {
+-    return ch.key === 'release' && installedIsRelease && !updateAvailable(ch.version, installed)
++    return (
++      ch.version === installed ||
++      (ch.key === 'release' && installedIsRelease && !updateAvailable(ch.version, installed))
++    )
+   }
+ 
+   let hasUpdate = $derived(
+     channels().some(
+-      (ch) => ch.key === 'release' && updateAvailable(ch.version, installed),
++      (ch) => (ch.key === 'release' || ch.key === 'prerelease') && updateAvailable(ch.version, installed),
+     ),
+   )
+ 
 diff --git a/src/routes/settings/LoadSharing.svelte b/src/routes/settings/LoadSharing.svelte
-index 514ff2c..2ada6a4 100644
+index 514ff2c..828fc7f 100644
 --- a/src/routes/settings/LoadSharing.svelte
 +++ b/src/routes/settings/LoadSharing.svelte
 @@ -242,6 +242,26 @@
@@ -6729,7 +6996,7 @@ index 514ff2c..2ada6a4 100644
            label={$_('config.loadsharing.safety_factor')}
 diff --git a/src/routes/settings/Modbus.svelte b/src/routes/settings/Modbus.svelte
 new file mode 100644
-index 0000000..94bb02b
+index 0000000..e0d4207
 --- /dev/null
 +++ b/src/routes/settings/Modbus.svelte
 @@ -0,0 +1,59 @@
@@ -6793,7 +7060,7 @@ index 0000000..94bb02b
 +  </ConfigSection>
 +</ConfigPage>
 diff --git a/src/routes/settings/Mqtt.svelte b/src/routes/settings/Mqtt.svelte
-index a2068a4..35d3461 100644
+index a2068a4..d9f9fc2 100644
 --- a/src/routes/settings/Mqtt.svelte
 +++ b/src/routes/settings/Mqtt.svelte
 @@ -324,6 +324,20 @@
@@ -6818,7 +7085,7 @@ index a2068a4..35d3461 100644
          label={$_('config.mqtt.vrms')}
          description={$_('config.mqtt.vrms_desc')}
 diff --git a/src/routes/settings/Rfid.svelte b/src/routes/settings/Rfid.svelte
-index 71b5c28..11cfb60 100644
+index 71b5c28..7e734fc 100644
 --- a/src/routes/settings/Rfid.svelte
 +++ b/src/routes/settings/Rfid.svelte
 @@ -12,10 +12,12 @@
@@ -6909,7 +7176,7 @@ index 71b5c28..11cfb60 100644
            <Button label={$_('config.rfid.remove_all')} variant="ghost" onclick={removeAll} />
          </div>
 diff --git a/src/routes/settings/Terminal.svelte b/src/routes/settings/Terminal.svelte
-index b9aa03d..a3f5329 100644
+index b9aa03d..f6652c2 100644
 --- a/src/routes/settings/Terminal.svelte
 +++ b/src/routes/settings/Terminal.svelte
 @@ -19,6 +19,7 @@
@@ -6973,7 +7240,7 @@ index b9aa03d..a3f5329 100644
      <ConfigSection title={$_('config.terminal.crash.title')}>
        <p class="mb-2 text-sm text-text-dim">{$_('config.terminal.crash.desc')}</p>
 diff --git a/src/routes/settings/Vehicle.svelte b/src/routes/settings/Vehicle.svelte
-index d15fa63..f266b61 100644
+index d15fa63..8ab0aec 100644
 --- a/src/routes/settings/Vehicle.svelte
 +++ b/src/routes/settings/Vehicle.svelte
 @@ -7,12 +7,14 @@
@@ -7049,7 +7316,7 @@ index d15fa63..f266b61 100644
      <ConfigSection title={$_('config.vehicle.src_tesla')}>
        <FormField label={$_('config.vehicle.range_unit')} status={$ss.mqtt_vehicle_range_miles ?? 'idle'}>
 diff --git a/src/routes/settings/__tests__/About.test.js b/src/routes/settings/__tests__/About.test.js
-index edca7fc..50eb6ca 100644
+index edca7fc..569bc1b 100644
 --- a/src/routes/settings/__tests__/About.test.js
 +++ b/src/routes/settings/__tests__/About.test.js
 @@ -32,3 +32,16 @@ describe('About page', () => {
@@ -7071,7 +7338,7 @@ index edca7fc..50eb6ca 100644
 +})
 diff --git a/src/routes/settings/__tests__/Dimming.test.js b/src/routes/settings/__tests__/Dimming.test.js
 new file mode 100644
-index 0000000..75dc701
+index 0000000..923c101
 --- /dev/null
 +++ b/src/routes/settings/__tests__/Dimming.test.js
 @@ -0,0 +1,101 @@
@@ -7177,7 +7444,7 @@ index 0000000..75dc701
 +  })
 +})
 diff --git a/src/routes/settings/__tests__/Display.test.js b/src/routes/settings/__tests__/Display.test.js
-index 755e3f6..f499814 100644
+index 755e3f6..2f21fa8 100644
 --- a/src/routes/settings/__tests__/Display.test.js
 +++ b/src/routes/settings/__tests__/Display.test.js
 @@ -135,3 +135,17 @@ describe('Display page', () => {
@@ -7199,7 +7466,7 @@ index 755e3f6..f499814 100644
 +  })
 +})
 diff --git a/src/routes/settings/__tests__/Evse.test.js b/src/routes/settings/__tests__/Evse.test.js
-index ef0d927..e0072e6 100644
+index ef0d927..4881414 100644
 --- a/src/routes/settings/__tests__/Evse.test.js
 +++ b/src/routes/settings/__tests__/Evse.test.js
 @@ -12,6 +12,7 @@ vi.mock('../../../lib/api/httpAPI.js', () => ({ httpAPI: vi.fn(() => Promise.res
@@ -7293,9 +7560,56 @@ index ef0d927..e0072e6 100644
 +    expect(httpAPI).toHaveBeenCalledWith('POST', '/config', JSON.stringify({ wled_enabled: false }))
 +  })
 +})
+diff --git a/src/routes/settings/__tests__/Firmware.test.js b/src/routes/settings/__tests__/Firmware.test.js
+index ed4eb34..cde44dd 100644
+--- a/src/routes/settings/__tests__/Firmware.test.js
++++ b/src/routes/settings/__tests__/Firmware.test.js
+@@ -254,10 +254,41 @@ describe('Firmware page', () => {
+     })
+     // In dev the mock server sits behind an /api prefix, and vitest runs with
+     // import.meta.env.DEV set, so match on the suffix.
+-    const [url, init] = global.fetch.mock.calls.find(([u]) => u.endsWith('/update'))
++        const [url, init] = global.fetch.mock.calls.find(([u]) => u.endsWith('/update'))
+     expect(url).toMatch(/\/update$/)
+     expect(init.method).toBe('POST')
+     expect(init.headers['X-Requested-With']).toBe('OpenEVSE')
+     expect(init.body).toBeInstanceOf(FormData)
+   })
++
++  it('only offers releases matching the installed meter variant (e.g. dts4921)', async () => {
++    global.fetch = vi.fn(() =>
++      Promise.resolve({
++        ok: true,
++        json: () =>
++          Promise.resolve([
++            {
++              tag_name: 'v5.2.0-sdm630.5',
++              name: 'v5.2.0-sdm630.5',
++              prerelease: false,
++              assets: [{ name: 'kinetos-v5-v5.2.0-sdm630.5.bin', browser_download_url: 'u-sdm' }],
++            },
++            {
++              tag_name: 'v5.2.0-dts4921.21',
++              name: 'v5.2.0-dts4921.21',
++              prerelease: false,
++              assets: [{ name: 'kinetos-v5-v5.2.0-dts4921.21.bin', browser_download_url: 'u-dts' }],
++            },
++          ]),
++      }),
++    )
++    config_store.set({ firmware: '7.1.3', version: 'v5.2.0-dev-dts4921-20', buildenv: 'kinetos-v5' })
++    const { getByText, queryByText } = render(Firmware)
++    await vi.waitFor(() => {
++      expect(getByText('config.firmware.channel_release')).toBeInTheDocument()
++    })
++    expect(getByText(/v5\.2\.0-dts4921\.21/)).toBeInTheDocument()
++    expect(queryByText(/v5\.2\.0-sdm630\.5/)).toBeNull()
++    expect(getByText('config.firmware.install_online')).toBeInTheDocument()
++  })
+ })
 diff --git a/src/routes/settings/__tests__/Modbus.test.js b/src/routes/settings/__tests__/Modbus.test.js
 new file mode 100644
-index 0000000..191bdfa
+index 0000000..bd90760
 --- /dev/null
 +++ b/src/routes/settings/__tests__/Modbus.test.js
 @@ -0,0 +1,48 @@
@@ -7348,7 +7662,7 @@ index 0000000..191bdfa
 +  })
 +})
 diff --git a/src/routes/settings/__tests__/Mqtt.test.js b/src/routes/settings/__tests__/Mqtt.test.js
-index 375ead8..f20881d 100644
+index 375ead8..57e3cc8 100644
 --- a/src/routes/settings/__tests__/Mqtt.test.js
 +++ b/src/routes/settings/__tests__/Mqtt.test.js
 @@ -75,3 +75,18 @@ describe('MQTT page', () => {
@@ -7371,7 +7685,7 @@ index 375ead8..f20881d 100644
 +  })
 +})
 diff --git a/src/routes/settings/__tests__/Rfid.test.js b/src/routes/settings/__tests__/Rfid.test.js
-index eedb860..740366a 100644
+index eedb860..04db88a 100644
 --- a/src/routes/settings/__tests__/Rfid.test.js
 +++ b/src/routes/settings/__tests__/Rfid.test.js
 @@ -112,3 +112,51 @@ describe('RFID page', () => {
@@ -7427,7 +7741,7 @@ index eedb860..740366a 100644
 +  })
 +})
 diff --git a/src/routes/settings/__tests__/Terminal.test.js b/src/routes/settings/__tests__/Terminal.test.js
-index e65e6d2..c3eb37e 100644
+index e65e6d2..0b68769 100644
 --- a/src/routes/settings/__tests__/Terminal.test.js
 +++ b/src/routes/settings/__tests__/Terminal.test.js
 @@ -366,3 +366,43 @@ describe('Terminal — Crash core dump', () => {
@@ -7475,7 +7789,7 @@ index e65e6d2..c3eb37e 100644
 +  })
 +})
 diff --git a/src/routes/settings/__tests__/Vehicle.test.js b/src/routes/settings/__tests__/Vehicle.test.js
-index 7f14ae8..674d0de 100644
+index 7f14ae8..e7fc4e6 100644
 --- a/src/routes/settings/__tests__/Vehicle.test.js
 +++ b/src/routes/settings/__tests__/Vehicle.test.js
 @@ -148,3 +148,46 @@ describe('Vehicle page', () => {

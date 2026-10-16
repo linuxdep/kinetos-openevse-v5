@@ -17,9 +17,9 @@ fi
 BUILD_NUM="$(cat "$COUNTER_FILE" | tr -d -c '0-9')"
 BUILD_NUM="${BUILD_NUM:-19}"
 
-# Basis-Version ermitteln (z.B. v5.2.0-dev aus build-master.sh)
+# Basis-Version ermitteln (z.B. v5.2.0 aus build-master.sh)
 BASE_VERSION="$(grep '^VERSION=' "$HERE/build-master.sh" 2>/dev/null | sed -e 's/.*:-//' -e 's/[}"].*//' || true)"
-BASE_PREFIX="$(echo "${BASE_VERSION:-v5.2.0-dev}" | sed -E 's/-(kinetos|dts4921).*//')"
+BASE_PREFIX="$(echo "${BASE_VERSION:-v5.2.0}" | sed -E 's/-(kinetos|dts4921).*//' | sed -E 's/-dev//')"
 VERSION_BASE="${VERSION_BASE:-${BASE_PREFIX}-dts4921}"
 
 # Manuelle Überschreibung via VERSION erlauben, sonst dynamisch generieren
@@ -27,7 +27,7 @@ MANUAL_VERSION=0
 if [ -n "${VERSION+x}" ]; then
   MANUAL_VERSION=1
 else
-  VERSION="${VERSION_BASE}-${BUILD_NUM}"
+  VERSION="${VERSION_BASE}.${BUILD_NUM}"
 fi
 
 GIT=(git -c user.name=build -c user.email=build@localhost -c core.autocrlf=false)
@@ -43,14 +43,14 @@ git -c core.autocrlf=false submodule update -q --init --recursive
 git submodule foreach -q --recursive 'git config core.autocrlf false && git checkout -q -- . && git clean -qfd'
 
 # GUI: Kinetos settings page, English only
-git -C gui-nightshift apply --ignore-whitespace "$HERE"/patches-master/gui-*.patch
-(cd gui-nightshift && npm ci --no-audit --no-fund --silent && npm run build --silent)
+git -C gui-nightshift apply --whitespace=nowarn --ignore-whitespace "$HERE"/patches-master/gui-*.patch
+(cd gui-nightshift && { [ -d node_modules ] || npm ci --no-audit --no-fund --silent; } && npm run build --silent)
 "${GIT[@]}" -C gui-nightshift add -A && "${GIT[@]}" -C gui-nightshift commit -qm "kinetos gui"
 git add gui-nightshift
 
 # Firmware: Original Kinetos patches + DTS4921 meter patch
-git apply --ignore-whitespace "$HERE"/patches-master/firmware-*.patch
-git apply --ignore-whitespace "$HERE"/patches-dts4921/*.patch
+git apply --whitespace=nowarn --ignore-whitespace "$HERE"/patches-master/firmware-*.patch
+git apply --whitespace=nowarn --ignore-whitespace "$HERE"/patches-dts4921/*.patch
 "${GIT[@]}" add -A && "${GIT[@]}" commit -qm "kinetos with dts4921 meter"
 
 export GITHUB_REF_NAME="$VERSION"
@@ -79,6 +79,10 @@ if [ "$RELEASE" = "1" ]; then
     echo ""
     echo "=== Erstelle GitHub Release für $VERSION ==="
     if [ -n "$REPO_URL" ]; then
+      RELEASE_FLAGS=()
+      if [ "${PRERELEASE:-0}" = "1" ]; then
+        RELEASE_FLAGS+=(--prerelease)
+      fi
       if ! gh release create "$VERSION" \
           "$BIN_FILE" \
           "$SHA_FILE" \
@@ -86,7 +90,7 @@ if [ "$RELEASE" = "1" ]; then
           --repo "$REPO_URL" \
           --title "Kinetos OpenEVSE V5 DTS4921 ($VERSION)" \
           --notes "Automatischer Build von $VERSION mit DTS4921 Zähler-Unterstützung." \
-          --prerelease; then
+          "${RELEASE_FLAGS[@]}"; then
         echo "Release existiert möglicherweise bereits oder Konfigurationsfehler. Versuche Asset-Upload..."
         gh release upload "$VERSION" "$BIN_FILE" "$SHA_FILE" "$ELF_FILE" --repo "$REPO_URL" --clobber || true
       fi
@@ -116,5 +120,5 @@ if [ "$MANUAL_VERSION" -eq 0 ]; then
   echo "$NEXT_BUILD" > "$COUNTER_FILE"
   echo ""
   echo "Build erfolgreich abgeschlossen."
-  echo "Build-Zähler erhöht: Nächster Build wird ${VERSION_BASE}-${NEXT_BUILD} sein."
+  echo "Build-Zähler erhöht: Nächster Build wird ${VERSION_BASE}.${NEXT_BUILD} sein."
 fi

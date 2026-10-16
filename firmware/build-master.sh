@@ -6,7 +6,7 @@
 # Output: out/kinetos-v5-<version>.bin (release assets must start with the buildenv for the update check) (flash via the wallbox's /update page)
 set -euo pipefail
 UPSTREAM="${UPSTREAM:-a3816295}"
-VERSION="${VERSION:-v5.2.0-dev-kinetos.18}"
+VERSION="${VERSION:-v5.2.0-kinetos.18}"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 WORK="${WORK:-$HERE/.work-master}"
 GIT=(git -c user.name=build -c user.email=build@localhost)
